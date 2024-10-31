@@ -29,7 +29,7 @@ test = (
         let dist = dist.mod(i, Add::add(1));
         (random, dist)
     ));
-    eval *assert(|_|"generate_U64 is not uniform!", is_dist_uniform(dist));
+    assert(|_|"generate_U64 is not uniform!", is_dist_uniform(dist));;
 
     // Test `generate_F64_2`.
     let dist = Array::fill(m, 0);
@@ -39,7 +39,7 @@ test = (
         let dist = dist.mod(i, Add::add(1));
         (random, dist)
     ));
-    eval *assert(|_|"generate_F64_2 is not uniform!", is_dist_uniform(dist));
+    assert(|_|"generate_F64_2 is not uniform!", is_dist_uniform(dist));;
 
     pure()
 );
