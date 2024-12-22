@@ -61,37 +61,3 @@ Initializes `Random` with an array.
 ### `init_by_seed : Std::U64 -> Random::Random`
 
 Initializes `Random` with a seed.
-
-## `namespace Random::Random`
-
-### `@mt : Random::Random -> Std::Array Std::U64`
-
-Retrieves the field `mt` from a value of `Random`.
-
-### `@mti : Random::Random -> Std::I64`
-
-Retrieves the field `mti` from a value of `Random`.
-
-### `act_mt : [f : Std::Functor] (Std::Array Std::U64 -> f (Std::Array Std::U64)) -> Random::Random -> f Random::Random`
-
-Updates a value of `Random` by applying a functorial action to field `mt`.
-
-### `act_mti : [f : Std::Functor] (Std::I64 -> f Std::I64) -> Random::Random -> f Random::Random`
-
-Updates a value of `Random` by applying a functorial action to field `mti`.
-
-### `mod_mt : (Std::Array Std::U64 -> Std::Array Std::U64) -> Random::Random -> Random::Random`
-
-Updates a value of `Random` by applying a function to field `mt`.
-
-### `mod_mti : (Std::I64 -> Std::I64) -> Random::Random -> Random::Random`
-
-Updates a value of `Random` by applying a function to field `mti`.
-
-### `set_mt : Std::Array Std::U64 -> Random::Random -> Random::Random`
-
-Updates a value of `Random` by setting field `mt` to a specified one.
-
-### `set_mti : Std::I64 -> Random::Random -> Random::Random`
-
-Updates a value of `Random` by setting field `mti` to a specified one.
