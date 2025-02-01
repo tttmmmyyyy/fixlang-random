@@ -1,6 +1,7 @@
 [general]
 name = "random"
 version = "1.0.0"
+description = "Provides random number generators."
 
 [build]
 files = ["random.fix"]
