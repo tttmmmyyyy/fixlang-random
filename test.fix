@@ -15,7 +15,7 @@ test = (
 
     // Check if the distriution array is unifom under error rate `error`.
     let is_dist_uniform = |dist: Array I64| (
-        dist.to_iter.fold(true, |ok, cnt|
+        dist.to_iter.fold(true, |cnt, ok|
             let cnt = cnt.to_F64;
             ok && (cnt >= (ave - ave * error) && cnt <= (ave + ave * error))
         )
@@ -23,7 +23,7 @@ test = (
 
     // Test `generate_U64`.
     let dist = Array::fill(m, 0);
-    let (random, dist) = Iterator::range(0, n).fold((random, dist), |(random, dist), _| (
+    let (random, dist) = Iterator::range(0, n).fold((random, dist), |_, (random, dist)| (
         let (random, x) = generate_U64(random);
         let i = (x % m.to_U64).to_I64;
         let dist = dist.mod(i, Add::add(1));
@@ -33,7 +33,7 @@ test = (
 
     // Test `generate_F64_2`.
     let dist = Array::fill(m, 0);
-    let (random, dist) = Iterator::range(0, n).fold((random, dist), |(random, dist), _| (
+    let (random, dist) = Iterator::range(0, n).fold((random, dist), |_, (random, dist)| (
         let (random, x) = generate_F64_2(random);
         let i = (x * m.to_F64).to_I64;
         let dist = dist.mod(i, Add::add(1));
