@@ -92,7 +92,7 @@ init_by_seed = |seed| (
             break $ Random { mt: mt, mti: _NN }
         };
         let mt = mt.set(mti, 
-            (6364136223846793005_U64 * (mt.@(mti-1).bit_xor(mt.@(mti-1).shift_right(62_U64))) + mti.to_U64)
+            (6364136223846793005_U64 * (mt.@(mti-1).bit_xor(mt.@(mti-1).shift_right(62_U64))) + mti.u64)
         );
         continue $ (mt, mti + 1)
     )
@@ -101,7 +101,7 @@ init_by_seed = |seed| (
 // Initializes `Random` with an array.
 init_by_array : Array U64 -> Random;
 init_by_array = |init_key| (
-    let key_length = init_key.get_size.to_I64;
+    let key_length = init_key.@size;
     let random = init_by_seed(19650218_U64);
     let Random { mt:mt, mti:mti } = random;
     let i: I64 = 1;
@@ -119,7 +119,7 @@ init_by_array = |init_key| (
                         mt.@(i - 1).shift_right(62_U64))
                     ) * 3935559000370003845_U64)
                 + init_key.@(j) 
-                + j.to_U64 /* non linear */
+                + j.u64 /* non linear */
             );
             let i = i + 1;
             let j = j + 1;
@@ -145,7 +145,7 @@ init_by_array = |init_key| (
                     (mt.@(i - 1).bit_xor(
                         mt.@(i - 1).shift_right(62_U64))
                     ) * 2862933555777941757_U64)
-                - i.to_U64 /* non linear */
+                - i.u64 /* non linear */
             );
             let i = i + 1;
             let (mt, i) =  if (i >= _NN) { 
@@ -188,7 +188,7 @@ generate_U64 = |Random { mt:mt, mti:mti }| (
                 i, 
                 mt.@(i + _MM)
                 .bit_xor(x.shift_right(1_U64))
-                .bit_xor(_mag01.@(x.bit_and(1_U64).to_I64)));
+                .bit_xor(_mag01.@(x.bit_and(1_U64).i64)));
             continue $ (mt, mti, i + 1)
         );
         let (mt, mti) = loop(
@@ -201,7 +201,7 @@ generate_U64 = |Random { mt:mt, mti:mti }| (
                 i, 
                 mt.@(i + (_MM - _NN))
                 .bit_xor(x.shift_right(1_U64))
-                .bit_xor(_mag01.@(x.bit_and(1_U64).to_I64)));
+                .bit_xor(_mag01.@(x.bit_and(1_U64).i64)));
             continue $ (mt, mti, i + 1)
         );
         let x = mt.@(_NN - 1).bit_and(_UM).bit_or(mt.@(0).bit_and(_LM));
@@ -209,7 +209,7 @@ generate_U64 = |Random { mt:mt, mti:mti }| (
             _NN - 1,
             mt.@(_MM-1)
             .bit_xor(x.shift_right(1_U64))
-            .bit_xor(_mag01.@(x.bit_and(1_U64).to_I64)));
+            .bit_xor(_mag01.@(x.bit_and(1_U64).i64)));
         let mti = 0;
         (mt, mti)
     };
@@ -229,26 +229,26 @@ generate_U64 = |Random { mt:mt, mti:mti }| (
 generate_I64_nonneg : Random -> (Random, I64);
 generate_I64_nonneg = |random| (
     let (random, x) = random.generate_U64;
-    (random, x.shift_right(1_U64).to_I64)
+    (random, x.shift_right(1_U64).i64)
 );
 
 // Generates a random number on [0, 1]-real-interval.
 generate_F64 : Random -> (Random, F64);
 generate_F64 = |random| (
     let (random, x) = random.generate_U64;
-    (random, x.shift_right(11_U64).to_F64 * (1.0/9007199254740991.0))
+    (random, x.shift_right(11_U64).f64 * (1.0/9007199254740991.0))
 );
 
 // Generates a random number on [0, 1)-real-interval.
 generate_F64_2 : Random -> (Random, F64);
 generate_F64_2 = |random| (
     let (random, x) = random.generate_U64;
-    (random, x.shift_right(11_U64).to_F64 * (1.0/9007199254740992.0))
+    (random, x.shift_right(11_U64).f64 * (1.0/9007199254740992.0))
 );
 
 // Generates a random number on (0, 1)-real-interval.
 generate_F64_3 : Random -> (Random, F64);
 generate_F64_3 = |random| (
     let (random, x) = random.generate_U64;
-    (random, (x.shift_right(12_U64).to_F64 + 0.5) * (1.0/4503599627370496.0))
+    (random, (x.shift_right(12_U64).f64 + 0.5) * (1.0/4503599627370496.0))
 );
