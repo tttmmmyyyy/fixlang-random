@@ -1,6 +1,6 @@
 # Random
 
-Defined in random@1.1.2
+Defined in random@1.1.3
 
 Mersenne Twister, ported to Fix Language by https://github.com/pt9999.
 
