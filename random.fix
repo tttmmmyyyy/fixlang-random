@@ -58,38 +58,38 @@
 // Mersenne Twister, ported to Fix Language by https://github.com/pt9999.
 module Random;
 
-_NN: I64;
-_NN = 312;
+__NN: I64;
+__NN = 312;
 
-_MM: I64;
-_MM = 156;
+__MM: I64;
+__MM = 156;
 
-_MATRIX_A: U64;
-_MATRIX_A = /* 0xB5026F5AA96619E9 = */ 13043109905998158313_U64;
+__MATRIX_A: U64;
+__MATRIX_A = /* 0xB5026F5AA96619E9 = */ 13043109905998158313_U64;
 
-_UM: U64;
-_UM = /* 0xFFFFFFFF80000000 = */ 18446744071562067968_U64; /* Most significant 33 bits */
+__UM: U64;
+__UM = /* 0xFFFFFFFF80000000 = */ 18446744071562067968_U64; /* Most significant 33 bits */
 
-_LM: U64;
-_LM = /* 0x7FFFFFFF = */ 2147483647_U64; /* Least significant 31 bits */
+__LM: U64;
+__LM = /* 0x7FFFFFFF = */ 2147483647_U64; /* Least significant 31 bits */
 
 _mag01: Array U64;
-_mag01 = [ 0_U64, _MATRIX_A ];
+_mag01 = [ 0_U64, __MATRIX_A ];
 
 // Random number generator.
 type Random = unbox struct {
     mt: Array U64,  /* The array for the state vector */
-    mti: I64        /* mti==_NN+1 means mt[_NN] is not initialized */
+    mti: I64        /* mti==__NN+1 means mt[__NN] is not initialized */
 };
 
 // Initializes `Random` with a seed.
 init_by_seed : U64 -> Random;
 init_by_seed = |seed| (
-    let mt = Array::fill(_NN, 0_U64);
+    let mt = Array::fill(__NN, 0_U64);
     let mt = mt.set(0, seed);
     loop((mt, 1), |(mt, mti)| 
-        if mti >= _NN {
-            break $ Random { mt: mt, mti: _NN }
+        if mti >= __NN {
+            break $ Random { mt: mt, mti: __NN }
         };
         let mt = mt.set(mti, 
             (6364136223846793005_U64 * (mt.@(mti-1).bit_xor(mt.@(mti-1).shift_right(62_U64))) + mti.u64)
@@ -106,7 +106,7 @@ init_by_array = |init_key| (
     let Random { mt:mt, mti:mti } = random;
     let i: I64 = 1;
     let j: I64 = 0;
-    let k: I64 = if _NN > key_length { _NN } else { key_length };
+    let k: I64 = if __NN > key_length { __NN } else { key_length };
     let (mt, mti, (i, j, k)) = loop(
         (mt, mti, (i, j, k)), |(mt, mti, (i, j, k))| (
             if k <= 0 {
@@ -123,8 +123,8 @@ init_by_array = |init_key| (
             );
             let i = i + 1;
             let j = j + 1;
-            let (mt, i) = if (i >= _NN) { 
-                (mt.set(0, mt.@(_NN-1)), 1)
+            let (mt, i) = if (i >= __NN) { 
+                (mt.set(0, mt.@(__NN-1)), 1)
             } else { 
                 (mt, i) 
             };
@@ -133,7 +133,7 @@ init_by_array = |init_key| (
             continue $ (mt, mti, (i, j, k))
         )
     );
-    let k = _NN-1;
+    let k = __NN-1;
     let (mt, mti, (i, j, k)) = loop(
         (mt, mti, (i, j, k)), |(mt, mti, (i, j, k))| (
             if k <= 0 {
@@ -148,8 +148,8 @@ init_by_array = |init_key| (
                 - i.u64 /* non linear */
             );
             let i = i + 1;
-            let (mt, i) =  if (i >= _NN) { 
-                (mt.set(0, mt.@(_NN - 1)), 1)
+            let (mt, i) =  if (i >= __NN) { 
+                (mt.set(0, mt.@(__NN - 1)), 1)
             } else {
                 (mt, i)
             };
@@ -165,14 +165,14 @@ init_by_array = |init_key| (
 // Generates a random number on [0, 2^64-1]-interval.
 generate_U64 : Random -> (Random, U64);
 generate_U64 = |Random { mt:mt, mti:mti }| (
-    let (mt, mti) = if (mti < _NN) {
+    let (mt, mti) = if (mti < __NN) {
         (mt, mti)
     } else { 
-        /* generate _NN words at one time */
+        /* generate __NN words at one time */
 
         /* if init_by_seed() has not been called, */
         /* a default initial seed is used     */
-        let (mt, mti) = if (mti == _NN+1) {
+        let (mt, mti) = if (mti == __NN+1) {
             let Random { mt:mt, mti:mti } = init_by_seed(5489_U64);
             (mt, mti)
         } else {
@@ -180,34 +180,34 @@ generate_U64 = |Random { mt:mt, mti:mti }| (
         };
         let (mt, mti) = loop(
             (mt, mti, 0), |(mt, mti, i)|
-            if i >= _NN - _MM {
+            if i >= __NN - __MM {
                 break $ (mt, mti)
             };
-            let x = mt.@(i).bit_and(_UM).bit_or(mt.@(i + 1).bit_and(_LM));
+            let x = mt.@(i).bit_and(__UM).bit_or(mt.@(i + 1).bit_and(__LM));
             let mt = mt.set(
                 i, 
-                mt.@(i + _MM)
+                mt.@(i + __MM)
                 .bit_xor(x.shift_right(1_U64))
                 .bit_xor(_mag01.@(x.bit_and(1_U64).i64)));
             continue $ (mt, mti, i + 1)
         );
         let (mt, mti) = loop(
-            (mt, mti, _NN - _MM), |(mt, mti, i)|
-            if i >= _NN - 1 {
+            (mt, mti, __NN - __MM), |(mt, mti, i)|
+            if i >= __NN - 1 {
                 break $ (mt, mti)
             };
-            let x = mt.@(i).bit_and(_UM).bit_or(mt.@(i + 1).bit_and(_LM));
+            let x = mt.@(i).bit_and(__UM).bit_or(mt.@(i + 1).bit_and(__LM));
             let mt = mt.set(
                 i, 
-                mt.@(i + (_MM - _NN))
+                mt.@(i + (__MM - __NN))
                 .bit_xor(x.shift_right(1_U64))
                 .bit_xor(_mag01.@(x.bit_and(1_U64).i64)));
             continue $ (mt, mti, i + 1)
         );
-        let x = mt.@(_NN - 1).bit_and(_UM).bit_or(mt.@(0).bit_and(_LM));
+        let x = mt.@(__NN - 1).bit_and(__UM).bit_or(mt.@(0).bit_and(__LM));
         let mt = mt.set(
-            _NN - 1,
-            mt.@(_MM-1)
+            __NN - 1,
+            mt.@(__MM-1)
             .bit_xor(x.shift_right(1_U64))
             .bit_xor(_mag01.@(x.bit_and(1_U64).i64)));
         let mti = 0;
