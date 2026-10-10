@@ -56,6 +56,19 @@
 // email: m-mat @ math.sci.hiroshima-u.ac.jp (remove spaces)
 
 // Mersenne Twister, ported to Fix Language by https://github.com/pt9999.
+//
+// Make a generator by `init_by_seed` or `init_by_array`. Each `generate_*` function returns the
+// next state of the generator together with a random number; pass that state to the next call.
+//
+// # Examples
+// ```fix
+// let random = init_by_seed(42_U64);
+// let (random, x) = random.generate_F64_2;
+// assert(|_|"", 0.0 <= x && x < 1.0);;
+// let (_, n) = random.generate_I64_nonneg;
+// let dice = n % 6 + 1;
+// assert(|_|"", 1 <= dice && dice <= 6)
+// ```
 module Random;
 
 __NN: I64;
